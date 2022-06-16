@@ -78,8 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 calButton('0', btnColor, symbolColor),
                 calButton('.', btnColor, symbolColor),
-                Container(
-                    width: MediaQuery.of(context).size.width * 0.4,
+                SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.39,
                     child: calButton('=', Colors.amber.shade700, symbolColor))
               ],
             )
