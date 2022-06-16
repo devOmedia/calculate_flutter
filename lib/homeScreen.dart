@@ -8,9 +8,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String resultTxt = '0.0';
+  double resultTxt = 0.0;
   final Color btnColor = Colors.grey.shade800;
   final Color symbolColor = Colors.white;
+
+  bool showresult = false;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,24 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            resultWidget(),
+            Padding(
+              padding: const EdgeInsets.only(right: 15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: numberList!
+                    .map((number) => Text(
+                          number.toString(),
+                          textAlign: TextAlign.left,
+                          style: const TextStyle(
+                            fontSize: 50,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ))
+                    .toList(),
+              ),
+            ),
+            showresult ? resultWidget() : const SizedBox(),
             const SizedBox(
               height: 10,
             ),
@@ -43,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 calButton('7', btnColor, symbolColor),
                 calButton('8', btnColor, symbolColor),
                 calButton('9', btnColor, symbolColor),
-                calButton('X', Colors.amber.shade700, symbolColor),
+                calButton('x', Colors.amber.shade700, symbolColor),
               ],
             ),
             const SizedBox(
@@ -98,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.all(10),
             child: Text(
-              resultTxt,
+              resultTxt.toString(),
               textAlign: TextAlign.left,
               style: const TextStyle(
                 color: Colors.white,
@@ -111,7 +130,73 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  calculation(String symbol) {}
+  ///======================================================calculation function
+  List? numberList = [];
+  int i = 0;
+  String fstnumber = '';
+  String lastnumber = '';
+  bool isFstNumber = true;
+  String operator = '';
+
+  calculation(String symbol) {
+    if (symbol == '=' || symbol == 'AC') {
+      if (symbol == '=') {
+        if (operator == '+') {
+          resultTxt = sum(double.parse(fstnumber), double.parse(lastnumber));
+        } else if (operator == '-') {
+          resultTxt = subs(double.parse(fstnumber), double.parse(lastnumber));
+        } else if (operator == '/') {
+          resultTxt = div(double.parse(fstnumber), double.parse(lastnumber));
+        } else if (operator == 'x') {
+          resultTxt = multi(double.parse(fstnumber), double.parse(lastnumber));
+        }
+
+        fstnumber = '';
+        lastnumber = '';
+        operator = '';
+        isFstNumber = true;
+        numberList!.clear();
+
+        setState(() {
+          showresult = true;
+          resultTxt;
+        });
+      } else {
+        fstnumber = '';
+        lastnumber = '';
+        operator = '';
+        isFstNumber = true;
+        setState(() {
+          resultTxt = 0.0;
+          numberList!.clear();
+        });
+      }
+    } else {
+      setState(() {
+        //numberList![i++] = symbol;
+        numberList?.add(symbol);
+      });
+
+      if (symbol == '+' ||
+          symbol == 'x' ||
+          symbol == '-' ||
+          symbol == '/' ||
+          symbol == '%' ||
+          symbol == '+/-') {
+        isFstNumber = false;
+        operator = symbol;
+        print("operator $operator");
+      } else {
+        isFstNumber ? fstnumber += symbol : lastnumber += symbol;
+        print("$fstnumber and $lastnumber");
+      }
+    }
+  }
+
+  double sum(double a, double b) => a + b;
+  double div(double a, double b) => a / b;
+  double multi(double a, double b) => a * b;
+  double subs(double a, double b) => a - b;
 
   Widget calButton(String btnsymbol, Color btnColor, Color symbolColor) {
     return OutlinedButton(
